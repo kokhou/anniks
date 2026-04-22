@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e0d0c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #0e0d0c;
+      --surface:     #161513;
+      --surface2:    #1e1c19;
+      --border:      #2e2b27;
+      --border-focus:#c8963e;
+      --gold:        #c8963e;
+      --gold-light:  #e8b96a;
+      --gold-dim:    #7a5a22;
+      --text:        #f0ece4;
+      --text-muted:  #7a7167;
+      --text-soft:   #b0a898;
+      --error:       #e07070;
+      --success:     #7ec8a0;
+      --radius:      12px;
+      --radius-sm:   8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+    }
+
+    /* ── Header ── */
+    .header {
+      padding: 20px 20px 0;
+      flex-shrink: 0;
+      animation: fadeDown 0.5s ease both;
+    }
+    .brand {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .header-line {
+      margin-top: 16px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--border) 60%, transparent 100%);
+    }
+
+    /* ── Scrollable form area ── */
+    .form-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 20px 120px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── Section labels ── */
+    .section-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .section-label:first-child { margin-top: 4px; }
+
+    /* ── Fields ── */
+    .field {
+      margin-bottom: 12px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+    }
+    .field label .opt {
+      font-weight: 300;
+      text-transform: none;
+      letter-spacing: 0;
+      color: #4a4640;
+      font-size: 10px;
+    }
+    .row2 { display: flex; gap: 10px; }
+    .row2 .field { flex: 1; min-width: 0; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 13px 15px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text);
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input::placeholder, textarea::placeholder { color: #3a3730; }
+    select option { background: #1e1c19; color: var(--text); }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237a7167' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      background: #201e1a;
+      box-shadow: 0 0 0 3px rgba(200,150,62,0.12);
+    }
+
+    textarea { resize: none; height: 72px; line-height: 1.5; }
+
+    /* Amount calc hint */
+    .calc-hint {
+      margin-top: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      min-height: 16px;
+      padding-left: 2px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Sticky bottom bar ── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0; right: 0;
+      padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+      z-index: 10;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: linear-gradient(135deg, #c8963e 0%, #e8b96a 50%, #c8963e 100%);
+      background-size: 200% 100%;
+      color: #0e0d0c;
+      transition: background-position 0.3s, transform 0.1s, opacity 0.2s;
+    }
+    .btn-submit:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-submit.loading { background-position: 100% 0; }
+
+    #status {
+      margin-top: 8px;
+      font-size: 12px;
+      text-align: center;
+      min-height: 16px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Success screen ── */
+    #successView {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 24px;
+      text-align: center;
+      animation: fadeUp 0.6s ease both;
+    }
+    .success-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin-bottom: 24px;
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    #successView h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    #successMsg {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 260px;
+    }
+    .btn-again {
+      width: 100%; max-width: 320px;
+      padding: 15px 28px;
+      border: 1.5px solid var(--gold);
+      border-radius: var(--radius);
+      background: transparent;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-again:active { background: var(--gold); color: var(--bg); }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Stagger field animations */
+    .field:nth-child(1)  { animation-delay: 0.05s; }
+    .field:nth-child(2)  { animation-delay: 0.10s; }
+    .field:nth-child(3)  { animation-delay: 0.15s; }
+    .field:nth-child(4)  { animation-delay: 0.20s; }
+    .field:nth-child(5)  { animation-delay: 0.25s; }
+    .field:nth-child(6)  { animation-delay: 0.30s; }
+    .field:nth-child(7)  { animation-delay: 0.35s; }
+
+    /* Desktop: centered card, zoomed for readability */
+    @media (min-width: 520px) {
+      html { zoom: 1.35; }
+      body { background: #080807; display: block; }
+      .header, .form-scroll { max-width: 480px; width: 100%; margin-left: auto; margin-right: auto; }
+      .header { padding-top: 28px; }
+      .bottom-bar { position: static; padding: 0 20px 28px; max-width: 480px; margin: 0 auto; width: 100%; }
+      .form-scroll { padding-bottom: 24px; overflow: visible; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Form View ── -->
+  <div id="formView">
+    <div class="header">
+      <div class="brand">Anniks</div>
+      <h1>New Redeem<br>Entry</h1>
+      <div class="header-line"></div>
+    </div>
+
+    <div class="form-scroll">
+
+      <div class="section-label">Record Info</div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="date">
+        </div>
+        <div class="field">
+          <label>No <span class="opt">auto</span></label>
+          <input type="number" id="no" min="1" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Redeem Type</label>
+          <select id="redeemType">
+            <option value="">Select</option>
+            <option>New</option>
+            <option>Existing</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Trial <span class="opt">optional</span></label>
+          <select id="trial">
+            <option value="">Select</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-label">Treatment</div>
+
+      <div class="field">
+        <label>Package <span class="opt">optional</span></label>
+        <select id="package">
+          <option value="">Select package</option>
+          <option>P6880 脸部塑型</option>
+          <option>P6880 开肩</option>
+          <option>P6880 体态</option>
+          <option>P6880 祈龄</option>
+          <option>P6880 局部</option>
+          <option>P4880 高级波肽</option>
+          <option>Gold 脸部塑型</option>
+          <option>Gold 开肩</option>
+          <option>T2388 小腿</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Product <span class="opt">optional</span></label>
+        <select id="product">
+          <option value="">Select product</option>
+          <option>T388 脸部塑型</option>
+          <option>T388 祈龄魔法</option>
+          <option>T298 体态</option>
+          <option>Firming Cream</option>
+        </select>
+      </div>
+
+      <div class="section-label">Payment</div>
+
+      <div class="field">
+        <label>Amount <span class="opt">optional · supports + − × ÷</span></label>
+        <input type="text" id="amount" inputmode="decimal"
+               placeholder="e.g. 2999 + 1000"
+               oninput="evalAmount(this)" onblur="evalAmount(this)">
+        <div id="amountResult" class="calc-hint"></div>
+      </div>
+
+      <div class="field">
+        <label>Payment Method <span class="opt">optional</span></label>
+        <select id="paymentMethod">
+          <option value="">Select method</option>
+          <option>Cash</option>
+          <option>Card</option>
+          <option>Online Transfer</option>
+          <option>Debit Card</option>
+          <option>Credit Card</option>
+          <option>QR</option>
+          <option>Transfer</option>
+        </select>
+      </div>
+
+      <div class="section-label">Staff & Notes</div>
+
+      <div class="field">
+        <label>Sales Person</label>
+        <select id="salesPerson">
+          <option value="">Select person</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Remark <span class="opt">optional</span></label>
+        <textarea id="remark" placeholder="Notes..."></textarea>
+      </div>
+
+    </div><!-- /form-scroll -->
+
+    <div class="bottom-bar">
+      <button class="btn-submit" id="submitBtn" onclick="submitEntry()">Save Entry</button>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <!-- ── Success View ── -->
+  <div id="successView">
+    <div class="success-ring">✓</div>
+    <h3>Entry Saved!</h3>
+    <p id="successMsg"></p>
+    <button class="btn-again" onclick="resetForm()">+ Add Another</button>
+  </div>
+
+  <script>
+    // Cancel: close modal on desktop, back on web app
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { try { google.script.host.close(); } catch(err) {} }
+    });
+
+    // Set today's date
+    var today = new Date();
+    document.getElementById('date').value = today.getFullYear() + '-' +
+      String(today.getMonth() + 1).padStart(2, '0') + '-' +
+      String(today.getDate()).padStart(2, '0');
+
+    // Load sales persons + next No
+    google.script.run.withSuccessHandler(function(data) {
+      var sel = document.getElementById('salesPerson');
+      data.salesPersons.forEach(function(name) {
+        var opt = document.createElement('option');
+        opt.value = opt.textContent = name;
+        sel.appendChild(opt);
+      });
+      document.getElementById('no').value = data.nextNo;
+    }).getDialogData();
+
+    function evalAmount(input) {
+      var raw = input.value.trim();
+      var el = document.getElementById('amountResult');
+      if (!raw) { el.textContent = ''; return; }
+      if (!/^[\d\s\+\-\*\/\.\(\)]+$/.test(raw)) {
+        el.style.color = 'var(--error)'; el.textContent = 'Invalid characters'; return;
+      }
+      try {
+        var val = Function('"use strict"; return (' + raw + ')')();
+        if (isNaN(val) || !isFinite(val)) throw new Error();
+        el.style.color = 'var(--gold)';
+        el.textContent = '= RM ' + parseFloat(val.toFixed(2)).toLocaleString();
+      } catch(e) { el.style.color = 'var(--error)'; el.textContent = 'Invalid expression'; }
+    }
+
+    function getAmountValue() {
+      var raw = document.getElementById('amount').value.trim();
+      if (!raw) return '';
+      if (!/^[\d\s\+\-\*\/\.\(\)]+$/.test(raw)) return raw;
+      try {
+        var val = Function('"use strict"; return (' + raw + ')')();
+        return isNaN(val) || !isFinite(val) ? raw : parseFloat(val.toFixed(2));
+      } catch(e) { return raw; }
+    }
+
+    function submitEntry() {
+      var date   = document.getElementById('date').value;
+      var no     = document.getElementById('no').value;
+      var rType  = document.getElementById('redeemType').value;
+      var salesP = document.getElementById('salesPerson').value;
+      var status = document.getElementById('status');
+      var btn    = document.getElementById('submitBtn');
+
+      if (!date || !no || !rType || !salesP) {
+        status.style.color = 'var(--error)';
+        status.textContent = 'Date, No, Redeem Type & Sales Person required';
+        return;
+      }
+
+      var entry = {
+        date: date, no: parseInt(no), redeemType: rType,
+        package:       document.getElementById('package').value,
+        trial:         document.getElementById('trial').value,
+        product:       document.getElementById('product').value,
+        amount:        getAmountValue(),
+        paymentMethod: document.getElementById('paymentMethod').value,
+        salesPerson:   salesP,
+        remark:        document.getElementById('remark').value
+      };
+
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      status.textContent = '';
+
+      google.script.run
+        .withSuccessHandler(function() {
+          btn.disabled = false;
+          btn.textContent = 'Save Entry';
+          try { google.script.host.close(); }
+          catch(e) { showSuccess(entry); }
+        })
+        .withFailureHandler(function(e) {
+          btn.disabled = false;
+          btn.textContent = 'Save Entry';
+          status.style.color = 'var(--error)';
+          status.textContent = e.message;
+        })
+        .addEntry(entry);
+    }
+
+    function showSuccess(entry) {
+      document.getElementById('formView').style.display = 'none';
+      var s = document.getElementById('successView');
+      s.style.display = 'flex';
+      document.getElementById('successMsg').textContent =
+        [entry.salesPerson, entry.redeemType,
+         entry.package, entry.amount ? 'RM ' + entry.amount : '']
+        .filter(Boolean).join(' · ');
+    }
+
+    function resetForm() {
+      document.getElementById('formView').style.display = 'block';
+      document.getElementById('successView').style.display = 'none';
+      document.getElementById('status').textContent = '';
+      document.getElementById('submitBtn').textContent = 'Save Entry';
+      ['redeemType','package','trial','product','amount','paymentMethod','salesPerson','remark']
+        .forEach(function(id) { document.getElementById(id).value = ''; });
+      document.getElementById('amountResult').textContent = '';
+      google.script.run.withSuccessHandler(function(data) {
+        document.getElementById('no').value = data.nextNo;
+      }).getDialogData();
+    }
+  </script>
+</body>
+</html>
