@@ -42,7 +42,8 @@ function setupSheet() {
   setDropdown(sheet, "I2:I1000", getSalesPersons(), true);
 
   // ── Column widths ──
-  sheet.setColumnWidth(1, 100);
+  sheet.setColumnWidth(1, 150);
+  sheet.getRange("A2:A1000").setNumberFormat("yyyy-mm-dd HH:mm");
   sheet.setColumnWidth(2, 50);
   sheet.setColumnWidth(3, 110);
   sheet.setColumnWidth(4, 160);
