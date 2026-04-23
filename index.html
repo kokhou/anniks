@@ -514,7 +514,7 @@
     <div class="bottom-bar">
       <button class="btn-submit" id="submitBtn" onclick="submitEntry()">Save Entry</button>
       <div id="status"></div>
-      <div class="build-tag">build <!--BUILD-->2026-04-23 16:41<!--/BUILD--></div>
+      <div class="build-tag">build <!--BUILD-->2026-04-23 16:42<!--/BUILD--></div>
     </div>
   </div>
 
@@ -715,6 +715,10 @@
       lines.push('');
       lines.push('Redeem: '   + (entry.redeemType    || ''));
       lines.push('Sales: '    + (entry.salesPerson   || ''));
+      if (entry.remark) {
+        lines.push('');
+        lines.push(entry.remark);
+      }
 
       document.getElementById('shareWhatsApp').href =
         'https://wa.me/?text=' + encodeURIComponent(lines.join('\n'));
