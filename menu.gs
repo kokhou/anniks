@@ -97,7 +97,9 @@ function showWhatsAppUrlDialog() {
     paymentMethod: found[7],
     remark:        found[9]
   };
-  var url = buildWhatsAppUrl_(entry);
+  var text = buildWhatsAppText_(entry);
+  var url  = 'https://wa.me/?text=' + encodeURIComponent(text);
+  var escapedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   var html = HtmlService.createHtmlOutput(
     '<div style="font-family:Arial,sans-serif;padding:16px;">' +
@@ -105,12 +107,18 @@ function showWhatsAppUrlDialog() {
       '<a href="' + url + '" target="_blank" ' +
          'style="display:inline-block;padding:12px 20px;background:#25d366;color:#fff;' +
          'text-decoration:none;border-radius:8px;font-weight:600;">Open WhatsApp</a>' +
-      '<p style="margin:16px 0 4px;font-size:11px;color:#888;">Or copy URL:</p>' +
+
+      '<p style="margin:16px 0 4px;font-size:11px;color:#888;">Message text (tap to select):</p>' +
       '<textarea readonly onclick="this.select()" ' +
-         'style="width:100%;height:80px;font-size:11px;padding:8px;border:1px solid #ddd;' +
+         'style="width:100%;height:120px;font-size:12px;padding:8px;border:1px solid #ddd;' +
+         'border-radius:4px;box-sizing:border-box;font-family:monospace;">' + escapedText + '</textarea>' +
+
+      '<p style="margin:12px 0 4px;font-size:11px;color:#888;">URL (tap to select):</p>' +
+      '<textarea readonly onclick="this.select()" ' +
+         'style="width:100%;height:70px;font-size:11px;padding:8px;border:1px solid #ddd;' +
          'border-radius:4px;box-sizing:border-box;">' + url + '</textarea>' +
     '</div>'
-  ).setWidth(420).setHeight(260);
+  ).setWidth(440).setHeight(400);
   ui.showModalDialog(html, "WhatsApp Share");
 }
 
