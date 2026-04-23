@@ -122,7 +122,7 @@ function showWhatsAppUrlDialog() {
   ui.showModalDialog(html, "WhatsApp Share");
 }
 
-function buildWhatsAppUrl_(entry) {
+function buildWhatsAppText_(entry) {
   var lines = ['*Sales ' + (entry.salesPerson || '') + '*'];
   lines.push('Package: '  + (entry.package       || ''));
   lines.push('Product: '  + (entry.product       || ''));
@@ -133,7 +133,7 @@ function buildWhatsAppUrl_(entry) {
     lines.push('');
     lines.push('_' + entry.remark + '_');
   }
-  return 'https://wa.me/?text=' + encodeURIComponent(lines.join('\n'));
+  return lines.join('\n');
 }
 
 function showRedeemDialog() {
