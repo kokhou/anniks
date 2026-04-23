@@ -438,7 +438,7 @@
         </div>
         <div class="field">
           <label>Payment Method <span class="opt">optional</span></label>
-          <select id="paymentMethod">
+          <select id="paymentMethod" onchange="toggleCustom('paymentMethod')">
             <option value="">Select method</option>
             <option>Cash</option>
             <option>Card</option>
@@ -447,7 +447,9 @@
             <option>Credit Card</option>
             <option>QR</option>
             <option>Transfer</option>
+            <option value="__custom__">+ Custom…</option>
           </select>
+          <input type="text" id="paymentMethodCustom" class="custom-input" placeholder="Enter custom method" autocomplete="off">
         </div>
       </div>
 
