@@ -590,8 +590,8 @@
     function submitEntry() {
       var date   = document.getElementById('date').value;
       var no     = document.getElementById('no').value;
-      var rType  = document.getElementById('redeemType').value;
-      var salesP = document.getElementById('salesPerson').value;
+      var rType  = getFieldValue('redeemType');
+      var salesP = getFieldValue('salesPerson');
       var status = document.getElementById('status');
       var btn    = document.getElementById('submitBtn');
 
@@ -607,7 +607,7 @@
         trial:         document.getElementById('trial').value,
         product:       getFieldValue('product'),
         amount:        getAmountValue(),
-        paymentMethod: document.getElementById('paymentMethod').value,
+        paymentMethod: getFieldValue('paymentMethod'),
         salesPerson:   salesP,
         remark:        document.getElementById('remark').value
       };
