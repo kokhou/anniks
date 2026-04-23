@@ -169,6 +169,20 @@
 
     textarea { resize: none; height: 72px; line-height: 1.5; }
 
+    /* Custom option reveal */
+    .custom-input {
+      display: none;
+      margin-top: 8px;
+      border-color: var(--gold-dim);
+      background: #1a1814;
+      animation: revealDown 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    .custom-input.visible { display: block; }
+    @keyframes revealDown {
+      from { opacity: 0; transform: translateY(-4px); max-height: 0; }
+      to   { opacity: 1; transform: translateY(0); max-height: 60px; }
+    }
+
     /* Date label in header */
     .header-row {
       display: flex;
