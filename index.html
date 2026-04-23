@@ -594,9 +594,9 @@
 
       var entry = {
         date: date, no: parseInt(no), redeemType: rType,
-        package:       document.getElementById('package').value,
+        package:       getFieldValue('package'),
         trial:         document.getElementById('trial').value,
-        product:       document.getElementById('product').value,
+        product:       getFieldValue('product'),
         amount:        getAmountValue(),
         paymentMethod: document.getElementById('paymentMethod').value,
         salesPerson:   salesP,
