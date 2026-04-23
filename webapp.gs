@@ -6,11 +6,20 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    var entry = JSON.parse(e.postData.contents);
-    var createdBy = addEntry(entry);
+    var payload = JSON.parse(e.postData.contents);
+    if (payload.action === "listMine") {
+      var res = getMyTodayEntries(payload.pin);
+      return jsonResponse_({ ok: true, name: res.name, entries: res.entries });
+    }
+    if (payload.action === "update") {
+      var editor = updateEntry(payload);
+      return jsonResponse_({ ok: true, createdBy: editor });
+    }
+    // default: add new entry
+    var createdBy = addEntry(payload);
     return jsonResponse_({ ok: true, createdBy: createdBy });
   } catch (err) {
-    return jsonResponse_({ ok: false, error: String(err) });
+    return jsonResponse_({ ok: false, error: String(err.message || err) });
   }
 }
 
