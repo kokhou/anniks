@@ -10,6 +10,16 @@
             "statusMessage": "Pushing to Google Sheets..."
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/choiai/Documents/projects/Anniks/anniks && git add -A && (git diff --cached --quiet || (git commit -m \"auto: update\" && git push)) 2>/dev/null || true",
+            "statusMessage": "Committing & pushing to GitHub..."
+          }
+        ]
       }
     ]
   }

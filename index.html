@@ -380,9 +380,9 @@
 
       <div class="row2">
         <div class="field">
-          <label>Package <span class="opt">optional · type or select</span></label>
-          <input type="text" id="package" list="packageList" placeholder="Select or type" autocomplete="off">
-          <datalist id="packageList">
+          <label>Package <span class="opt">optional</span></label>
+          <select id="package" onchange="toggleCustom('package')">
+            <option value="">Select package</option>
             <option>P6880 脸部塑型</option>
             <option>P6880 开肩</option>
             <option>P6880 体态</option>
@@ -392,17 +392,21 @@
             <option>Gold 脸部塑型</option>
             <option>Gold 开肩</option>
             <option>T2388 小腿</option>
-          </datalist>
+            <option value="__custom__">+ Custom…</option>
+          </select>
+          <input type="text" id="packageCustom" class="custom-input" placeholder="Enter custom package" autocomplete="off">
         </div>
         <div class="field">
-          <label>Product <span class="opt">optional · type or select</span></label>
-          <input type="text" id="product" list="productList" placeholder="Select or type" autocomplete="off">
-          <datalist id="productList">
+          <label>Product <span class="opt">optional</span></label>
+          <select id="product" onchange="toggleCustom('product')">
+            <option value="">Select product</option>
             <option>T388 脸部塑型</option>
             <option>T388 祈龄魔法</option>
             <option>T298 体态</option>
             <option>Firming Cream</option>
-          </datalist>
+            <option value="__custom__">+ Custom…</option>
+          </select>
+          <input type="text" id="productCustom" class="custom-input" placeholder="Enter custom product" autocomplete="off">
         </div>
       </div>
 
