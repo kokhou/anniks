@@ -374,11 +374,13 @@
       <div class="row2">
         <div class="field">
           <label>Redeem Type</label>
-          <select id="redeemType">
+          <select id="redeemType" onchange="toggleCustom('redeemType')">
             <option value="">Select</option>
             <option>New</option>
             <option>Existing</option>
+            <option value="__custom__">+ Custom…</option>
           </select>
+          <input type="text" id="redeemTypeCustom" class="custom-input" placeholder="Enter custom type" autocomplete="off">
         </div>
         <div class="field">
           <label>Trial <span class="opt">optional</span></label>
