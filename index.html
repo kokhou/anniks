@@ -514,7 +514,7 @@
     <div class="bottom-bar">
       <button class="btn-submit" id="submitBtn" onclick="submitEntry()">Save Entry</button>
       <div id="status"></div>
-      <div class="build-tag">build <!--BUILD-->2026-04-23 16:31<!--/BUILD--></div>
+      <div class="build-tag">build <!--BUILD-->2026-04-23 16:41<!--/BUILD--></div>
     </div>
   </div>
 
@@ -707,17 +707,14 @@
         .filter(Boolean).join(' · ');
 
       // Build WhatsApp share message
-      var lines = ['🧾 *New Redeem Entry*'];
-      if (createdBy)            lines.push('By: ' + createdBy);
-      if (entry.date)           lines.push('Date: ' + entry.date.replace('T', ' '));
-      if (entry.salesPerson)    lines.push('Sales: ' + entry.salesPerson);
-      if (entry.redeemType)     lines.push('Type: ' + entry.redeemType);
-      if (entry.package)        lines.push('Package: ' + entry.package);
-      if (entry.trial)          lines.push('Trial: ' + entry.trial);
-      if (entry.product)        lines.push('Product: ' + entry.product);
-      if (entry.amount)         lines.push('Amount: RM ' + entry.amount);
-      if (entry.paymentMethod)  lines.push('Pay: ' + entry.paymentMethod);
-      if (entry.remark)         lines.push('Note: ' + entry.remark);
+      var lines = ['*Sales*'];
+      lines.push('Package: '  + (entry.package       || ''));
+      lines.push('Product: '  + (entry.product       || ''));
+      lines.push('Amount: '   + (entry.amount ? 'RM ' + entry.amount : ''));
+      lines.push('Pay: '      + (entry.paymentMethod || ''));
+      lines.push('');
+      lines.push('Redeem: '   + (entry.redeemType    || ''));
+      lines.push('Sales: '    + (entry.salesPerson   || ''));
 
       document.getElementById('shareWhatsApp').href =
         'https://wa.me/?text=' + encodeURIComponent(lines.join('\n'));
