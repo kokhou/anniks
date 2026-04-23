@@ -5,7 +5,7 @@ function setupSheet() {
   sheet.setName("Sales Tracker");
 
   // ── Headers ──
-  var headers = ["Date", "No", "Redeem Type", "Package", "Trial", "Product", "Amount", "Payment Method", "Sales Person", "Remark"];
+  var headers = ["Date", "No", "Redeem Type", "Package", "Trial", "Product", "Amount", "Payment Method", "Sales Person", "Remark", "Created By"];
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
 
   var headerRange = sheet.getRange(1, 1, 1, headers.length);
