@@ -495,21 +495,25 @@
       }
     });
 
-    // Set today's date
+    // Set today's date + current time
     var today = new Date();
-    document.getElementById('date').value = today.getFullYear() + '-' +
+    document.getElementById('date').value =
+      today.getFullYear() + '-' +
       String(today.getMonth() + 1).padStart(2, '0') + '-' +
-      String(today.getDate()).padStart(2, '0');
+      String(today.getDate()).padStart(2, '0') + 'T' +
+      String(today.getHours()).padStart(2, '0') + ':' +
+      String(today.getMinutes()).padStart(2, '0');
     updateDateChip();
 
     function updateDateChip() {
       var v = document.getElementById('date').value;
       if (!v) return;
-      var d = new Date(v + 'T00:00:00');
+      var d = new Date(v);
       var t = new Date();
       var isToday = d.toDateString() === t.toDateString();
-      var label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-      document.getElementById('dateChipText').textContent = isToday ? ('Today · ' + label) : label;
+      var dateLabel = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      var timeLabel = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('dateChipText').textContent = (isToday ? 'Today' : dateLabel) + ' · ' + timeLabel;
     }
 
     function openDatePicker() {
