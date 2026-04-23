@@ -11,6 +11,8 @@ function onOpen() {
     .addItem("🔑 Create / Update PIN", "showCreatePinDialog")
     .addItem("🗑️ Remove PIN", "showRemovePinDialog")
     .addItem("📋 List Users with PIN", "showListUsersDialog")
+    .addSeparator()
+    .addItem("💬 WhatsApp URL by No.", "showWhatsAppUrlDialog")
     .addToUi();
 }
 
