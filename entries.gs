@@ -35,7 +35,11 @@ function parseEntryDate_(raw) {
 }
 
 function addEntry(entry) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var createdBy = findUserByPin(entry.pin);
+  if (!createdBy) throw new Error("Invalid PIN");
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
   var date = parseEntryDate_(entry.date);
   sheet.appendRow([
     date,
@@ -47,6 +51,7 @@ function addEntry(entry) {
     entry.amount === "" ? "" : parseFloat(entry.amount),
     entry.paymentMethod,
     entry.salesPerson,
-    entry.remark
+    entry.remark,
+    createdBy
   ]);
 }
