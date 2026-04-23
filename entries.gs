@@ -1,19 +1,9 @@
-// Reading + writing redeem entries
+// Reading + writing redeem entries on the Sales Tracker sheet
 
 function getDialogData() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
-  var salesPersons = getSalesPersons();
-
-  var today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
-  var data = sheet.getDataRange().getValues();
   var count = 0;
-  for (var i = 1; i < data.length; i++) {
-    var rowDate = data[i][0] ? Utilities.formatDate(new Date(data[i][0]), Session.getScriptTimeZone(), "yyyy-MM-dd") : "";
-    if (rowDate === today) count++;
-  }
-
-  return { salesPersons: salesPersons, nextNo: count + 1 };
+  forEachTodayRow_(function() { count++; });
+  return { salesPersons: getSalesPersons(), nextNo: count + 1 };
 }
 
 function parseEntryDate_(raw) {
@@ -35,60 +25,45 @@ function parseEntryDate_(raw) {
   );
 }
 
-// Returns { name, entries: [{no, date, redeemType, package, trial, product, amount, paymentMethod, salesPerson, remark}] }
-// — filtered to today + created by the PIN's user.
+function rowToEntry_(row) {
+  var tz = getTz_();
+  return {
+    no:            row[COL.NO - 1],
+    date:          Utilities.formatDate(new Date(row[COL.DATE - 1]), tz, "yyyy-MM-dd'T'HH:mm"),
+    redeemType:    row[COL.REDEEM_TYPE - 1],
+    package:       row[COL.PACKAGE - 1],
+    trial:         row[COL.TRIAL - 1],
+    product:       row[COL.PRODUCT - 1],
+    amount:        row[COL.AMOUNT - 1] === "" ? "" : row[COL.AMOUNT - 1],
+    paymentMethod: row[COL.PAYMENT_METHOD - 1],
+    salesPerson:   row[COL.SALES_PERSON - 1],
+    remark:        row[COL.REMARK - 1]
+  };
+}
+
+// Returns { name, entries: [...] } — today's rows created by the PIN's owner.
 function getMyTodayEntries(pin) {
   var name = findUserByPin(pin);
   if (!name) throw new Error("Invalid PIN");
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
-  var tz = Session.getScriptTimeZone();
-  var today = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
-  var data = sheet.getDataRange().getValues();
   var out = [];
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    if (!row[0]) continue;
-    var rowDate = Utilities.formatDate(new Date(row[0]), tz, "yyyy-MM-dd");
-    if (rowDate !== today) continue;
-    if (String(row[10] || "") !== name) continue;
-    out.push({
-      no:            row[1],
-      date:          Utilities.formatDate(new Date(row[0]), tz, "yyyy-MM-dd'T'HH:mm"),
-      redeemType:    row[2],
-      package:       row[3],
-      trial:         row[4],
-      product:       row[5],
-      amount:        row[6] === "" ? "" : row[6],
-      paymentMethod: row[7],
-      salesPerson:   row[8],
-      remark:        row[9]
-    });
-  }
+  forEachTodayRow_(function(row) {
+    if (String(row[COL.CREATED_BY - 1] || "") === name) out.push(rowToEntry_(row));
+  });
   return { name: name, entries: out };
 }
 
-// Finds today's row matching entry.no, updates columns except Date + No.
-// Overwrites Created By with the editor's name.
+// Finds today's row matching entry.no, updates columns C..K (leaves Date + No).
+// Stamps Created By with the editor's name.
 function updateEntry(entry) {
   var editor = findUserByPin(entry.pin);
   if (!editor) throw new Error("Invalid PIN");
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
-  var tz = Session.getScriptTimeZone();
-  var today = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
-  var data = sheet.getDataRange().getValues();
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    if (!row[0]) continue;
-    var rowDate = Utilities.formatDate(new Date(row[0]), tz, "yyyy-MM-dd");
-    if (rowDate !== today) continue;
-    if (parseInt(row[1], 10) !== parseInt(entry.no, 10)) continue;
-
-    // Update columns C..K (3..11), leave A (date) + B (no) alone
-    sheet.getRange(i + 1, 3, 1, 9).setValues([[
+  var targetNo = parseInt(entry.no, 10);
+  var written = false;
+  forEachTodayRow_(function(row, rowIdx, sheet) {
+    if (parseInt(row[COL.NO - 1], 10) !== targetNo) return;
+    sheet.getRange(rowIdx, COL.REDEEM_TYPE, 1, NUM_COLS - (COL.REDEEM_TYPE - 1)).setValues([[
       entry.redeemType,
       entry.package,
       entry.trial,
@@ -99,20 +74,20 @@ function updateEntry(entry) {
       entry.remark,
       editor
     ]]);
-    return editor;
-  }
-  throw new Error("Entry No. " + entry.no + " not found for today");
+    written = true;
+    return true; // stop iteration
+  });
+  if (!written) throw new Error("Entry No. " + entry.no + " not found for today");
+  return editor;
 }
 
 function addEntry(entry) {
   var createdBy = findUserByPin(entry.pin);
   if (!createdBy) throw new Error("Invalid PIN");
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
-  var date = parseEntryDate_(entry.date);
+  var sheet = getSalesSheet_();
   sheet.appendRow([
-    date,
+    parseEntryDate_(entry.date),
     entry.no,
     entry.redeemType,
     entry.package,
@@ -125,8 +100,7 @@ function addEntry(entry) {
     createdBy
   ]);
 
-  // Force standard format on the new date cell (appendRow auto-formats based on locale)
-  sheet.getRange(sheet.getLastRow(), 1).setNumberFormat("yyyy-mm-dd HH:mm");
-
+  // appendRow auto-formats date cells based on locale — force our standard format.
+  sheet.getRange(sheet.getLastRow(), COL.DATE).setNumberFormat("yyyy-mm-dd HH:mm");
   return createdBy;
 }
