@@ -75,27 +75,20 @@ function showWhatsAppUrlDialog() {
   var no = parseInt(r.getResponseText().trim(), 10);
   if (!no) { ui.alert("Invalid No."); return; }
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
-  var data = sheet.getDataRange().getValues();
-  var tz = Session.getScriptTimeZone();
-  var today = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
-
   var found = null;
-  for (var i = data.length - 1; i >= 1; i--) {
-    var rowDate = data[i][0] ? Utilities.formatDate(new Date(data[i][0]), tz, "yyyy-MM-dd") : "";
-    if (rowDate === today && parseInt(data[i][1], 10) === no) { found = data[i]; break; }
-  }
+  forEachTodayRow_(function(row) {
+    if (parseInt(row[COL.NO - 1], 10) === no) { found = row; return true; }
+  });
   if (!found) { ui.alert("No entry found for today with No. " + no); return; }
 
   var entry = {
-    salesPerson:   found[8],
-    redeemType:    found[2],
-    package:       found[3],
-    product:       found[5],
-    amount:        found[6],
-    paymentMethod: found[7],
-    remark:        found[9]
+    salesPerson:   found[COL.SALES_PERSON - 1],
+    redeemType:    found[COL.REDEEM_TYPE - 1],
+    package:       found[COL.PACKAGE - 1],
+    product:       found[COL.PRODUCT - 1],
+    amount:        found[COL.AMOUNT - 1],
+    paymentMethod: found[COL.PAYMENT_METHOD - 1],
+    remark:        found[COL.REMARK - 1]
   };
   var text = buildWhatsAppText_(entry);
   var url  = 'https://wa.me/?text=' + encodeURIComponent(text);
