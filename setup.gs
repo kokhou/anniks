@@ -37,7 +37,7 @@ function setupSheet() {
     "Firming Cream"
   ], true);
 
-  setDropdown(sheet, "H2:H1000", ["Cash", "Card", "Online Transfer", "Debit Card", "Credit Card", "QR", "Transfer"], true);
+  setDropdown(sheet, "H2:H1000", ["Cash", "Debit Card", "Credit Card", "Online Transfer", "QR Pay"], true);
 
   setDropdown(sheet, "I2:I1000", getSalesPersons(), true);
 
