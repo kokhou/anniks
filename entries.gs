@@ -59,7 +59,5 @@ function addEntry(entry) {
   // Force standard format on the new date cell (appendRow auto-formats based on locale)
   sheet.getRange(sheet.getLastRow(), 1).setNumberFormat("yyyy-mm-dd HH:mm");
 
-  notifyWhatsApp_(entry, createdBy);
-
   return createdBy;
 }
