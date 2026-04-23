@@ -655,10 +655,11 @@
       document.getElementById('successView').style.display = 'none';
       document.getElementById('status').textContent = '';
       document.getElementById('submitBtn').textContent = 'Save Entry';
-      ['redeemType','package','trial','product','amount','paymentMethod','salesPerson','remark','packageCustom','productCustom']
+      ['redeemType','package','trial','product','amount','paymentMethod','salesPerson','remark',
+       'redeemTypeCustom','packageCustom','productCustom','paymentMethodCustom','salesPersonCustom']
         .forEach(function(id) { document.getElementById(id).value = ''; });
-      document.getElementById('packageCustom').classList.remove('visible');
-      document.getElementById('productCustom').classList.remove('visible');
+      ['redeemTypeCustom','packageCustom','productCustom','paymentMethodCustom','salesPersonCustom']
+        .forEach(function(id) { document.getElementById(id).classList.remove('visible'); });
       document.getElementById('amountResult').textContent = '';
       fetch(API_URL)
         .then(function(r) { return r.json(); })
