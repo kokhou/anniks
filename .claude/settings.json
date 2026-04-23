@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /Users/choiai/Documents/projects/Anniks/anniks && git add -A && (git diff --cached --quiet || (git commit -m \"auto: update\" && git push)) 2>/dev/null || true",
+            "command": "cd /Users/choiai/Documents/projects/Anniks/anniks && ts=$(TZ=Asia/Kuala_Lumpur date '+%Y-%m-%d %H:%M') && perl -i -pe \"s|<!--BUILD-->.*?<!--/BUILD-->|<!--BUILD-->$ts<!--/BUILD-->|g\" index.html && git add -A && (git diff --cached --quiet || (git commit -m \"auto: update ($ts)\" && git push)) 2>/dev/null || true",
             "statusMessage": "Committing & pushing to GitHub..."
           }
         ]
