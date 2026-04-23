@@ -53,8 +53,13 @@ function setupSheet() {
   sheet.setColumnWidth(8, 130);
   sheet.setColumnWidth(9, 110);
   sheet.setColumnWidth(10, 180);
+  sheet.setColumnWidth(11, 110);
 
   sheet.setFrozenRows(1);
+
+  // Provision hidden Users sheet + encryption key
+  getUsersSheet_();
+  getEncryptionKey_();
 
   // Seed default sales persons if not set
   var props = PropertiesService.getScriptProperties();
