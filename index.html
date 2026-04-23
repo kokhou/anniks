@@ -457,9 +457,10 @@
 
       <div class="field">
         <label>Sales Person</label>
-        <select id="salesPerson">
+        <select id="salesPerson" onchange="toggleCustom('salesPerson')">
           <option value="">Select person</option>
         </select>
+        <input type="text" id="salesPersonCustom" class="custom-input" placeholder="Enter custom name" autocomplete="off">
       </div>
 
       <div class="field">
