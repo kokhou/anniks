@@ -55,4 +55,6 @@ function addEntry(entry) {
     entry.remark,
     createdBy
   ]);
+
+  notifyWhatsApp_(entry, createdBy);
 }
