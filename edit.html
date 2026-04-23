@@ -24,25 +24,25 @@
     }
     body { display: flex; flex-direction: column; min-height: 100vh; min-height: -webkit-fill-available; }
 
-    .header { padding: 20px 20px 0; flex-shrink: 0; animation: fadeDown 0.5s ease both; }
-    .brand { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    .header { padding: 14px 20px 0; flex-shrink: 0; animation: fadeDown 0.5s ease both; }
+    .brand { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
     .header-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; font-style: italic; color: var(--text-soft); }
-    .header-line { margin-top: 16px; height: 1px; background: linear-gradient(90deg, var(--gold) 0%, var(--border) 60%, transparent 100%); }
+    .header-line { margin-top: 10px; height: 1px; background: linear-gradient(90deg, var(--gold) 0%, var(--border) 60%, transparent 100%); }
 
-    .form-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 120px; -webkit-overflow-scrolling: touch; }
+    .form-scroll { flex: 1; overflow-y: auto; padding: 12px 20px 92px; -webkit-overflow-scrolling: touch; }
 
     .section-label {
       font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
-      color: var(--gold-dim); margin: 24px 0 14px;
+      color: var(--gold-dim); margin: 14px 0 8px;
       display: flex; align-items: center; gap: 10px; animation: fadeUp 0.5s ease both;
     }
     .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .section-label:first-child { margin-top: 4px; }
+    .section-label:first-child { margin-top: 2px; }
 
-    .field { margin-bottom: 12px; animation: fadeUp 0.5s ease both; }
+    .field { margin-bottom: 8px; animation: fadeUp 0.5s ease both; }
     .field label {
       display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
-      text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
     }
     .field label .opt { font-weight: 300; text-transform: none; letter-spacing: 0; color: #4a4640; font-size: 10px; }
     .field label .locked { color: var(--gold-dim); font-size: 10px; letter-spacing: 1px; }
