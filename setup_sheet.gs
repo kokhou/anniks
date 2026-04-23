@@ -85,8 +85,8 @@ function setupSheet() {
   headerRange.setFontColor("#ffffff");
   headerRange.setFontWeight("bold");
 
-  // ── Dropdowns (rows 2–1000) ──
-  setDropdown(sheet, "C2:C1000", ["New", "Existing"]);
+  // ── Dropdowns (rows 2–1000) · allowInvalid so custom entries from web app don't error ──
+  setDropdown(sheet, "C2:C1000", ["New", "Existing"], true);
 
   setDropdown(sheet, "D2:D1000", [
     "P6880 脸部塑型",
@@ -98,18 +98,18 @@ function setupSheet() {
     "Gold 脸部塑型",
     "Gold 开肩",
     "T2388 小腿"
-  ]);
+  ], true);
 
-  setDropdown(sheet, "E2:E1000", ["Yes", "No"]);
+  setDropdown(sheet, "E2:E1000", ["Yes", "No"], true);
 
   setDropdown(sheet, "F2:F1000", [
     "T388 脸部塑型",
     "T388 祈龄魔法",
     "T298 体态",
     "Firming Cream"
-  ]);
+  ], true);
 
-  setDropdown(sheet, "H2:H1000", ["Cash", "Card", "Online Transfer", "Debit Card", "Credit Card", "QR", "Transfer"]);
+  setDropdown(sheet, "H2:H1000", ["Cash", "Card", "Online Transfer", "Debit Card", "Credit Card", "QR", "Transfer"], true);
 
   setDropdown(sheet, "I2:I1000", getSalesPersons(), true);
 
