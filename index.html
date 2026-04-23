@@ -614,12 +614,18 @@
       var no     = document.getElementById('no').value;
       var rType  = getFieldValue('redeemType');
       var salesP = getFieldValue('salesPerson');
+      var pin    = document.getElementById('pin').value.trim();
       var status = document.getElementById('status');
       var btn    = document.getElementById('submitBtn');
 
       if (!date || !no || !rType || !salesP) {
         status.style.color = 'var(--error)';
         status.textContent = 'Date, No, Redeem Type & Sales Person required';
+        return;
+      }
+      if (!/^\d{4}$/.test(pin)) {
+        status.style.color = 'var(--error)';
+        status.textContent = 'Enter your 4-digit PIN';
         return;
       }
 
@@ -631,7 +637,8 @@
         amount:        getAmountValue(),
         paymentMethod: getFieldValue('paymentMethod'),
         salesPerson:   salesP,
-        remark:        document.getElementById('remark').value
+        remark:        document.getElementById('remark').value,
+        pin:           pin
       };
 
       btn.disabled = true;
