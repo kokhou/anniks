@@ -646,8 +646,10 @@
       document.getElementById('successView').style.display = 'none';
       document.getElementById('status').textContent = '';
       document.getElementById('submitBtn').textContent = 'Save Entry';
-      ['redeemType','package','trial','product','amount','paymentMethod','salesPerson','remark']
+      ['redeemType','package','trial','product','amount','paymentMethod','salesPerson','remark','packageCustom','productCustom']
         .forEach(function(id) { document.getElementById(id).value = ''; });
+      document.getElementById('packageCustom').classList.remove('visible');
+      document.getElementById('productCustom').classList.remove('visible');
       document.getElementById('amountResult').textContent = '';
       fetch(API_URL)
         .then(function(r) { return r.json(); })
