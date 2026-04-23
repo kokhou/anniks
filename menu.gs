@@ -65,6 +65,69 @@ function showListUsersDialog() {
   ui.alert("Users with PIN", list.length ? list.join("\n") : "(none)", ui.ButtonSet.OK);
 }
 
+function showWhatsAppUrlDialog() {
+  var ui = SpreadsheetApp.getUi();
+  var r = ui.prompt("WhatsApp URL by No.",
+    "Enter the entry No. (for today):",
+    ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK) return;
+
+  var no = parseInt(r.getResponseText().trim(), 10);
+  if (!no) { ui.alert("Invalid No."); return; }
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  var tz = Session.getScriptTimeZone();
+  var today = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
+
+  var found = null;
+  for (var i = data.length - 1; i >= 1; i--) {
+    var rowDate = data[i][0] ? Utilities.formatDate(new Date(data[i][0]), tz, "yyyy-MM-dd") : "";
+    if (rowDate === today && parseInt(data[i][1], 10) === no) { found = data[i]; break; }
+  }
+  if (!found) { ui.alert("No entry found for today with No. " + no); return; }
+
+  var entry = {
+    salesPerson:   found[8],
+    redeemType:    found[2],
+    package:       found[3],
+    product:       found[5],
+    amount:        found[6],
+    paymentMethod: found[7],
+    remark:        found[9]
+  };
+  var url = buildWhatsAppUrl_(entry);
+
+  var html = HtmlService.createHtmlOutput(
+    '<div style="font-family:Arial,sans-serif;padding:16px;">' +
+      '<p style="margin:0 0 12px;font-size:13px;color:#555;">Entry No. ' + no + '</p>' +
+      '<a href="' + url + '" target="_blank" ' +
+         'style="display:inline-block;padding:12px 20px;background:#25d366;color:#fff;' +
+         'text-decoration:none;border-radius:8px;font-weight:600;">Open WhatsApp</a>' +
+      '<p style="margin:16px 0 4px;font-size:11px;color:#888;">Or copy URL:</p>' +
+      '<textarea readonly onclick="this.select()" ' +
+         'style="width:100%;height:80px;font-size:11px;padding:8px;border:1px solid #ddd;' +
+         'border-radius:4px;box-sizing:border-box;">' + url + '</textarea>' +
+    '</div>'
+  ).setWidth(420).setHeight(260);
+  ui.showModalDialog(html, "WhatsApp Share");
+}
+
+function buildWhatsAppUrl_(entry) {
+  var lines = ['*Sales ' + (entry.salesPerson || '') + '*'];
+  lines.push('Package: '  + (entry.package       || ''));
+  lines.push('Product: '  + (entry.product       || ''));
+  lines.push('Amount: '   + (entry.amount ? 'RM ' + entry.amount : ''));
+  lines.push('Pay: '      + (entry.paymentMethod || ''));
+  lines.push('Redeem: '   + (entry.redeemType    || ''));
+  if (entry.remark) {
+    lines.push('');
+    lines.push('_' + entry.remark + '_');
+  }
+  return 'https://wa.me/?text=' + encodeURIComponent(lines.join('\n'));
+}
+
 function showRedeemDialog() {
   var html = HtmlService.createHtmlOutputFromFile("index")
     .setWidth(420)
