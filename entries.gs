@@ -17,7 +17,7 @@ function getDialogData() {
 
 function addEntry(entry) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var date = new Date(entry.date.indexOf("T") === -1 ? entry.date + "T00:00:00" : entry.date);
+  var date = parseEntryDate_(entry.date);
   sheet.appendRow([
     date,
     entry.no,
