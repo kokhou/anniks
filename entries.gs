@@ -57,4 +57,6 @@ function addEntry(entry) {
   ]);
 
   notifyWhatsApp_(entry, createdBy);
+
+  return createdBy;
 }
