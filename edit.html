@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Edit Entry · Anniks</title>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e0d0c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0e0d0c; --surface:#161513; --surface2:#1e1c19; --border:#2e2b27;
+      --border-focus:#c8963e; --gold:#c8963e; --gold-light:#e8b96a; --gold-dim:#7a5a22;
+      --text:#f0ece4; --text-muted:#7a7167; --text-soft:#b0a898;
+      --error:#e07070; --success:#7ec8a0; --radius:12px; --radius-sm:8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%; background: var(--bg); color: var(--text);
+      font-family: 'Outfit', sans-serif; font-size: 15px; line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    body { display: flex; flex-direction: column; min-height: 100vh; min-height: -webkit-fill-available; }
+
+    .header { padding: 20px 20px 0; flex-shrink: 0; animation: fadeDown 0.5s ease both; }
+    .brand { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    .header-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; font-style: italic; color: var(--text-soft); }
+    .header-line { margin-top: 16px; height: 1px; background: linear-gradient(90deg, var(--gold) 0%, var(--border) 60%, transparent 100%); }
+
+    .form-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 120px; -webkit-overflow-scrolling: touch; }
+
+    .section-label {
+      font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--gold-dim); margin: 24px 0 14px;
+      display: flex; align-items: center; gap: 10px; animation: fadeUp 0.5s ease both;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-label:first-child { margin-top: 4px; }
+
+    .field { margin-bottom: 12px; animation: fadeUp 0.5s ease both; }
+    .field label {
+      display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px;
+    }
+    .field label .opt { font-weight: 300; text-transform: none; letter-spacing: 0; color: #4a4640; font-size: 10px; }
+    .field label .locked { color: var(--gold-dim); font-size: 10px; letter-spacing: 1px; }
+    .row2 { display: flex; gap: 10px; }
+    .row2 .field { flex: 1; min-width: 0; }
+
+    input, select, textarea {
+      width: 100%; padding: 13px 15px; background: var(--surface2);
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 400; color: var(--text);
+      -webkit-appearance: none; appearance: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; outline: none;
+    }
+    input::placeholder, textarea::placeholder { color: #3a3730; }
+    select option { background: #1e1c19; color: var(--text); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237a7167' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus); background: #201e1a;
+      box-shadow: 0 0 0 3px rgba(200,150,62,0.12);
+    }
+    input[readonly], input:disabled {
+      opacity: 0.6; cursor: not-allowed; color: var(--text-muted);
+    }
+    textarea { resize: none; height: 72px; line-height: 1.5; }
+
+    .custom-input {
+      display: none; margin-top: 8px; border-color: var(--gold-dim); background: #1a1814;
+      animation: revealDown 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    .custom-input.visible { display: block; }
+    @keyframes revealDown {
+      from { opacity: 0; transform: translateY(-4px); max-height: 0; }
+      to   { opacity: 1; transform: translateY(0); max-height: 60px; }
+    }
+
+    .calc-hint { margin-top: 5px; font-size: 12px; font-weight: 500; min-height: 16px; padding-left: 2px; letter-spacing: 0.3px; }
+
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+      background: linear-gradient(to top, var(--bg) 60%, transparent); z-index: 10;
+    }
+    .btn-submit {
+      width: 100%; padding: 16px; border: none; border-radius: var(--radius);
+      font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      background: linear-gradient(135deg, #c8963e 0%, #e8b96a 50%, #c8963e 100%);
+      background-size: 200% 100%; color: #0e0d0c;
+      transition: background-position 0.3s, transform 0.1s, opacity 0.2s;
+    }
+    .btn-submit:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #status { margin-top: 8px; font-size: 12px; text-align: center; min-height: 16px; letter-spacing: 0.3px; }
+    .build-tag {
+      margin-top: 6px; font-size: 10px; text-align: center; color: #7a736a;
+      letter-spacing: 1px; text-transform: uppercase; font-family: 'Outfit', sans-serif; opacity: 0.55;
+    }
+
+    /* ── Auth view ── */
+    #authView, #listView, #successView {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 40px 24px; text-align: center;
+      animation: fadeUp 0.6s ease both;
+    }
+    #authView.active, #listView.active, #successView.active { display: flex; }
+    .auth-card {
+      width: 100%; max-width: 340px;
+    }
+    .auth-card .brand { margin-bottom: 12px; }
+    .auth-card h2 {
+      font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600;
+      font-style: italic; color: var(--text); margin-bottom: 8px;
+    }
+    .auth-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 28px; }
+    .pin-input {
+      text-align: center; font-size: 22px; letter-spacing: 12px; padding: 16px;
+    }
+    .auth-card .btn-submit { margin-top: 20px; }
+
+    /* ── List view ── */
+    .list-card {
+      width: 100%; max-width: 480px; text-align: left;
+    }
+    .list-card h2 {
+      font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600;
+      font-style: italic; color: var(--text); margin-bottom: 4px; text-align: center;
+    }
+    .list-card .sub { color: var(--text-muted); font-size: 12px; text-align: center; margin-bottom: 24px; letter-spacing: 0.5px; }
+    .entry-row {
+      background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 10px;
+      cursor: pointer; transition: border-color 0.2s, background 0.2s;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .entry-row:active { border-color: var(--gold); background: #201e1a; }
+    .entry-row .no-chip {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic;
+      color: var(--gold); min-width: 34px;
+    }
+    .entry-row .info { flex: 1; min-width: 0; }
+    .entry-row .info .top { font-size: 14px; color: var(--text); margin-bottom: 2px; }
+    .entry-row .info .bot { font-size: 11px; color: var(--text-muted); letter-spacing: 0.3px; }
+    .entry-row .arrow { color: var(--gold-dim); font-size: 18px; }
+    .empty {
+      color: var(--text-muted); font-size: 14px; text-align: center; padding: 40px 0;
+    }
+
+    /* ── Success ── */
+    .success-ring {
+      width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 24px;
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    #successView h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600;
+      font-style: italic; color: var(--text); margin-bottom: 10px;
+    }
+    #successMsg { color: var(--text-muted); font-size: 14px; line-height: 1.7; margin-bottom: 36px; max-width: 260px; }
+    .btn-again {
+      width: 100%; max-width: 320px; padding: 15px 28px;
+      border: 1.5px solid var(--gold); border-radius: var(--radius);
+      background: transparent; font-family: 'Outfit', sans-serif; font-size: 14px;
+      font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--gold); cursor: pointer; transition: background 0.2s, color 0.2s;
+      text-decoration: none; display: inline-block; text-align: center;
+    }
+    .btn-again:active { background: var(--gold); color: var(--bg); }
+    .btn-whatsapp {
+      width: 100%; max-width: 320px; padding: 15px 28px; margin-bottom: 12px;
+      border: none; border-radius: var(--radius);
+      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase; color: #ffffff; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      text-decoration: none; transition: transform 0.1s, opacity 0.2s;
+    }
+    .btn-whatsapp:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-whatsapp svg { width: 18px; height: 18px; fill: #fff; }
+
+    /* ── Form view ── */
+    #formView { display: none; flex-direction: column; min-height: 100vh; }
+    #formView.active { display: flex; }
+
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp   { from { opacity: 0; transform: translateY(10px); }  to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn    { from { opacity: 0; transform: scale(0.5); }        to { opacity: 1; transform: scale(1); } }
+
+    @media (min-width: 520px) {
+      html { zoom: 1.35; }
+      body { background: #080807; display: block; }
+      .header, .form-scroll { max-width: 480px; width: 100%; margin-left: auto; margin-right: auto; }
+      .header { padding-top: 28px; }
+      .bottom-bar { position: static; padding: 0 20px 28px; max-width: 480px; margin: 0 auto; width: 100%; }
+      .form-scroll { padding-bottom: 24px; overflow: visible; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Auth view ── -->
+  <div id="authView" class="active">
+    <div class="auth-card">
+      <div class="brand">Anniks · Edit</div>
+      <h2>Enter PIN</h2>
+      <p>Authorize to edit today's entries</p>
+      <input id="authPin" class="pin-input" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="••••" autocomplete="off">
+      <button class="btn-submit" id="authBtn" onclick="submitAuth()">Continue</button>
+      <div id="authStatus" style="margin-top:12px;font-size:12px;min-height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ── List view ── -->
+  <div id="listView">
+    <div class="list-card">
+      <h2>Your Entries</h2>
+      <div class="sub" id="listSub">Today</div>
+      <div id="entryList"></div>
+      <div style="margin-top:20px;text-align:center;">
+        <a href="#" onclick="goToAuth(); return false;" class="btn-again" style="max-width:200px;padding:10px 20px;">← Change PIN</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Form view (edit) ── -->
+  <div id="formView">
+    <div class="header">
+      <div class="brand">Anniks · Editing</div>
+      <div class="header-title" id="editingTitle">Entry</div>
+      <div class="header-line"></div>
+    </div>
+
+    <div class="form-scroll">
+
+      <div class="row2">
+        <div class="field">
+          <label>No. <span class="locked">🔒 Locked</span></label>
+          <input type="text" id="no" readonly>
+        </div>
+        <div class="field">
+          <label>Date <span class="locked">🔒 Locked</span></label>
+          <input type="text" id="dateDisplay" readonly>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Redeem Type</label>
+          <select id="redeemType" onchange="toggleCustom('redeemType')">
+            <option value="">Select</option>
+            <option>New</option>
+            <option>Existing</option>
+            <option value="__custom__">+ Custom…</option>
+          </select>
+          <input type="text" id="redeemTypeCustom" class="custom-input" placeholder="Enter custom type" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Trial <span class="opt">optional</span></label>
+          <select id="trial">
+            <option value="">Select</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-label">Treatment</div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Package <span class="opt">optional</span></label>
+          <select id="package" onchange="toggleCustom('package')">
+            <option value="">Select package</option>
+            <option>P6880 脸部塑型</option>
+            <option>P6880 开肩</option>
+            <option>P6880 体态</option>
+            <option>P6880 祈龄</option>
+            <option>P6880 局部</option>
+            <option>P4880 高级波肽</option>
+            <option>Gold 脸部塑型</option>
+            <option>Gold 开肩</option>
+            <option>T2388 小腿</option>
+            <option value="__custom__">+ Custom…</option>
+          </select>
+          <input type="text" id="packageCustom" class="custom-input" placeholder="Enter custom package" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Product <span class="opt">optional</span></label>
+          <select id="product" onchange="toggleCustom('product')">
+            <option value="">Select product</option>
+            <option>T388 脸部塑型</option>
+            <option>T388 祈龄魔法</option>
+            <option>T298 体态</option>
+            <option>Firming Cream</option>
+            <option value="__custom__">+ Custom…</option>
+          </select>
+          <input type="text" id="productCustom" class="custom-input" placeholder="Enter custom product" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="section-label">Payment</div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Amount <span class="opt">optional</span></label>
+          <input type="text" id="amount" autocomplete="off" autocapitalize="off"
+                 placeholder="e.g. 2999 + 1000"
+                 oninput="evalAmount(this)" onblur="evalAmount(this)">
+          <div id="amountResult" class="calc-hint"></div>
+        </div>
+        <div class="field">
+          <label>Payment Method <span class="opt">optional</span></label>
+          <select id="paymentMethod" onchange="toggleCustom('paymentMethod')">
+            <option value="">Select method</option>
+            <option>Cash</option>
+            <option>Card</option>
+            <option>Online Transfer</option>
+            <option>Debit Card</option>
+            <option>Credit Card</option>
+            <option>QR</option>
+            <option>Transfer</option>
+            <option value="__custom__">+ Custom…</option>
+          </select>
+          <input type="text" id="paymentMethodCustom" class="custom-input" placeholder="Enter custom method" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="section-label">Staff & Notes</div>
+
+      <div class="field">
+        <label>Sales Person</label>
+        <select id="salesPerson" onchange="toggleCustom('salesPerson')">
+          <option value="">Select person</option>
+        </select>
+        <input type="text" id="salesPersonCustom" class="custom-input" placeholder="Enter custom name" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>Remark <span class="opt">optional</span></label>
+        <textarea id="remark" placeholder="Notes..."></textarea>
+      </div>
+
+    </div>
+
+    <div class="bottom-bar">
+      <button class="btn-submit" id="submitBtn" onclick="submitEdit()">Update Entry</button>
+      <div id="status"></div>
+      <div class="build-tag">build <!--BUILD-->dev<!--/BUILD--></div>
+    </div>
+  </div>
+
+  <!-- ── Success view ── -->
+  <div id="successView">
+    <div class="success-ring">✓</div>
+    <h3>Entry Updated!</h3>
+    <p id="successMsg"></p>
+    <a id="shareWhatsApp" class="btn-whatsapp" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.966-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Share to WhatsApp
+    </a>
+    <a href="#" onclick="returnToList(); return false;" class="btn-again">← Back to List</a>
+  </div>
+
+  <script>
+    var API_URL = 'https://script.google.com/macros/s/AKfycbx1XpgZMSdYdBAmslnm2zdHvFoNRPk3zk71DGXbFK16du54gdjBxDDBuflFIJBF57pk/exec';
+
+    var state = { pin: '', name: '', entries: [], currentEntry: null, salesPersons: [] };
+
+    // ── View switching ──
+    function showView(id) {
+      ['authView','listView','formView','successView'].forEach(function(v) {
+        document.getElementById(v).classList.toggle('active', v === id);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    function goToAuth() {
+      state.pin = ''; state.name = ''; state.entries = [];
+      document.getElementById('authPin').value = '';
+      document.getElementById('authStatus').textContent = '';
+      showView('authView');
+    }
+
+    // ── Step 1: Auth ──
+    function submitAuth() {
+      var pin = document.getElementById('authPin').value.trim();
+      var st  = document.getElementById('authStatus');
+      var btn = document.getElementById('authBtn');
+      if (!/^\d{4}$/.test(pin)) {
+        st.style.color = 'var(--error)';
+        st.textContent = 'Enter a 4-digit PIN';
+        return;
+      }
+      btn.disabled = true; btn.textContent = 'Checking...';
+      st.textContent = '';
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'listMine', pin: pin })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          btn.disabled = false; btn.textContent = 'Continue';
+          if (!res.ok) {
+            st.style.color = 'var(--error)';
+            st.textContent = res.error || 'Auth failed';
+            return;
+          }
+          state.pin = pin;
+          state.name = res.name;
+          state.entries = res.entries || [];
+          renderList();
+          showView('listView');
+        })
+        .catch(function(e) {
+          btn.disabled = false; btn.textContent = 'Continue';
+          st.style.color = 'var(--error)';
+          st.textContent = 'Network error';
+        });
+    }
+
+    // ── Step 2: Pick entry ──
+    function renderList() {
+      document.getElementById('listSub').textContent = state.name + ' · Today';
+      var wrap = document.getElementById('entryList');
+      wrap.innerHTML = '';
+      if (!state.entries.length) {
+        wrap.innerHTML = '<div class="empty">No entries yet for today.</div>';
+        return;
+      }
+      state.entries.forEach(function(en, idx) {
+        var div = document.createElement('div');
+        div.className = 'entry-row';
+        var time = en.date ? en.date.split('T')[1] || '' : '';
+        var top = (en.salesPerson || '') + (en.redeemType ? ' · ' + en.redeemType : '');
+        var bot = [
+          en.package, en.product,
+          en.amount ? 'RM ' + en.amount : '',
+          time
+        ].filter(Boolean).join(' · ');
+        div.innerHTML =
+          '<div class="no-chip">' + en.no + '</div>' +
+          '<div class="info">' +
+            '<div class="top">' + escapeHtml(top || '—') + '</div>' +
+            '<div class="bot">' + escapeHtml(bot || '') + '</div>' +
+          '</div>' +
+          '<div class="arrow">›</div>';
+        div.onclick = function() { openEditForm(idx); };
+        wrap.appendChild(div);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+      });
+    }
+
+    // ── Step 3: Edit form ──
+    function openEditForm(idx) {
+      var en = state.entries[idx];
+      state.currentEntry = en;
+
+      // Load sales persons if not loaded
+      loadSalesPersons(function() {
+        document.getElementById('no').value = en.no;
+        document.getElementById('dateDisplay').value = en.date ? en.date.replace('T', ' ') : '';
+        document.getElementById('editingTitle').textContent = 'No. ' + en.no;
+
+        setSelectOrCustom('redeemType', en.redeemType);
+        document.getElementById('trial').value = en.trial || '';
+        setSelectOrCustom('package', en.package);
+        setSelectOrCustom('product', en.product);
+        document.getElementById('amount').value = en.amount === '' ? '' : en.amount;
+        evalAmount(document.getElementById('amount'));
+        setSelectOrCustom('paymentMethod', en.paymentMethod);
+        setSelectOrCustom('salesPerson', en.salesPerson);
+        document.getElementById('remark').value = en.remark || '';
+
+        showView('formView');
+      });
+    }
+
+    function loadSalesPersons(cb) {
+      if (state.salesPersons.length) { cb(); return; }
+      fetch(API_URL)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          state.salesPersons = data.salesPersons || [];
+          var sel = document.getElementById('salesPerson');
+          state.salesPersons.forEach(function(name) {
+            var opt = document.createElement('option');
+            opt.value = opt.textContent = name;
+            sel.appendChild(opt);
+          });
+          var co = document.createElement('option');
+          co.value = '__custom__'; co.textContent = '+ Custom…';
+          sel.appendChild(co);
+          cb();
+        })
+        .catch(cb);
+    }
+
+    function setSelectOrCustom(id, value) {
+      var sel = document.getElementById(id);
+      var inp = document.getElementById(id + 'Custom');
+      var v = value == null ? '' : String(value);
+      var match = false;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === v && v !== '__custom__') { match = true; break; }
+      }
+      if (match) {
+        sel.value = v;
+        if (inp) { inp.classList.remove('visible'); inp.value = ''; }
+      } else if (v && inp) {
+        sel.value = '__custom__';
+        inp.classList.add('visible');
+        inp.value = v;
+      } else {
+        sel.value = '';
+        if (inp) { inp.classList.remove('visible'); inp.value = ''; }
+      }
+    }
+
+    function toggleCustom(id) {
+      var sel = document.getElementById(id);
+      var inp = document.getElementById(id + 'Custom');
+      if (sel.value === '__custom__') {
+        inp.classList.add('visible'); inp.focus();
+      } else {
+        inp.classList.remove('visible'); inp.value = '';
+      }
+    }
+
+    function getFieldValue(id) {
+      var sel = document.getElementById(id);
+      if (sel.value === '__custom__') return document.getElementById(id + 'Custom').value.trim();
+      return sel.value;
+    }
+
+    function evalAmount(input) {
+      var raw = input.value.trim();
+      var el = document.getElementById('amountResult');
+      if (!raw) { el.textContent = ''; return; }
+      if (!/^[\d\s\+\-\*\/\.\(\)]+$/.test(raw)) {
+        el.style.color = 'var(--error)'; el.textContent = 'Invalid characters'; return;
+      }
+      try {
+        var val = Function('"use strict"; return (' + raw + ')')();
+        if (isNaN(val) || !isFinite(val)) throw new Error();
+        el.style.color = 'var(--gold)';
+        el.textContent = '= RM ' + parseFloat(val.toFixed(2)).toLocaleString();
+      } catch(e) { el.style.color = 'var(--error)'; el.textContent = 'Invalid expression'; }
+    }
+
+    function getAmountValue() {
+      var raw = document.getElementById('amount').value.trim();
+      if (!raw) return '';
+      if (!/^[\d\s\+\-\*\/\.\(\)]+$/.test(raw)) return raw;
+      try {
+        var val = Function('"use strict"; return (' + raw + ')')();
+        return isNaN(val) || !isFinite(val) ? raw : parseFloat(val.toFixed(2));
+      } catch(e) { return raw; }
+    }
+
+    // ── Step 3: Submit edit ──
+    function submitEdit() {
+      var rType  = getFieldValue('redeemType');
+      var salesP = getFieldValue('salesPerson');
+      var status = document.getElementById('status');
+      var btn    = document.getElementById('submitBtn');
+
+      if (!rType || !salesP) {
+        status.style.color = 'var(--error)';
+        status.textContent = 'Redeem Type & Sales Person required';
+        return;
+      }
+
+      var entry = {
+        action: 'update',
+        pin: state.pin,
+        no: state.currentEntry.no,
+        redeemType: rType,
+        package:       getFieldValue('package'),
+        trial:         document.getElementById('trial').value,
+        product:       getFieldValue('product'),
+        amount:        getAmountValue(),
+        paymentMethod: getFieldValue('paymentMethod'),
+        salesPerson:   salesP,
+        remark:        document.getElementById('remark').value
+      };
+
+      btn.disabled = true; btn.textContent = 'Updating...';
+      status.textContent = '';
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(entry)
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          btn.disabled = false; btn.textContent = 'Update Entry';
+          if (res.ok) showSuccess(entry, res.createdBy);
+          else {
+            status.style.color = 'var(--error)';
+            status.textContent = res.error || 'Update failed';
+          }
+        })
+        .catch(function(e) {
+          btn.disabled = false; btn.textContent = 'Update Entry';
+          status.style.color = 'var(--error)';
+          status.textContent = e.message || 'Network error';
+        });
+    }
+
+    // ── Step 4: Success ──
+    function showSuccess(entry, editorName) {
+      document.getElementById('successMsg').textContent =
+        [entry.salesPerson, entry.redeemType,
+         entry.package, entry.amount ? 'RM ' + entry.amount : '']
+        .filter(Boolean).join(' · ');
+
+      var lines = ['*Edited Sale ' + (entry.salesPerson || '') + '*'];
+      lines.push('Package: '  + (entry.package       || ''));
+      lines.push('Product: '  + (entry.product       || ''));
+      lines.push('Amount: '   + (entry.amount ? 'RM ' + entry.amount : ''));
+      lines.push('Pay: '      + (entry.paymentMethod || ''));
+      lines.push('Redeem: '   + (entry.redeemType    || ''));
+      if (entry.remark) {
+        lines.push('');
+        lines.push('_' + entry.remark + '_');
+      }
+      document.getElementById('shareWhatsApp').href =
+        'https://wa.me/?text=' + encodeURIComponent(lines.join('\n'));
+
+      showView('successView');
+    }
+
+    function returnToList() {
+      // refresh the list in case the edit changed displayed values
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'listMine', pin: state.pin })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (res.ok) { state.entries = res.entries || []; renderList(); }
+          showView('listView');
+        })
+        .catch(function() { showView('listView'); });
+    }
+
+    // Submit auth on Enter
+    document.getElementById('authPin').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submitAuth();
+    });
+  </script>
+</body>
+</html>
