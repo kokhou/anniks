@@ -1,7 +1,8 @@
 // Reading + writing redeem entries
 
 function getDialogData() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Sales Tracker") || ss.getActiveSheet();
   var salesPersons = getSalesPersons();
 
   var today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
