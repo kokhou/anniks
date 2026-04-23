@@ -7,8 +7,8 @@ function doGet(e) {
 function doPost(e) {
   try {
     var entry = JSON.parse(e.postData.contents);
-    addEntry(entry);
-    return jsonResponse_({ ok: true });
+    var createdBy = addEntry(entry);
+    return jsonResponse_({ ok: true, createdBy: createdBy });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
   }
