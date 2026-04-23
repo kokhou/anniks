@@ -161,6 +161,40 @@
 
     textarea { resize: none; height: 72px; line-height: 1.5; }
 
+    /* Date label in header */
+    .header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .date-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .date-hidden {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .date-label {
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .date-label:active { color: var(--gold); }
+
     /* Amount calc hint */
     .calc-hint {
       margin-top: 5px;
@@ -299,25 +333,21 @@
   <!-- ── Form View ── -->
   <div id="formView">
     <div class="header">
-      <div class="brand">Anniks</div>
-      <h1>New Redeem<br>Entry</h1>
+      <div class="header-row">
+        <div class="brand">Anniks</div>
+        <span class="date-wrap">
+          <button type="button" class="date-label" id="dateChip" onclick="openDatePicker()">
+            <span id="dateChipText">Today</span>
+          </button>
+          <input type="date" id="date" class="date-hidden" onchange="updateDateChip()">
+        </span>
+      </div>
       <div class="header-line"></div>
     </div>
 
     <div class="form-scroll">
 
-      <div class="section-label">Record Info</div>
-
-      <div class="row2">
-        <div class="field">
-          <label>Date</label>
-          <input type="date" id="date">
-        </div>
-        <div class="field">
-          <label>No <span class="opt">auto</span></label>
-          <input type="number" id="no" min="1" inputmode="numeric">
-        </div>
-      </div>
+      <input type="hidden" id="no">
 
       <div class="row2">
         <div class="field">
@@ -340,55 +370,57 @@
 
       <div class="section-label">Treatment</div>
 
-      <div class="field">
-        <label>Package <span class="opt">optional</span></label>
-        <select id="package">
-          <option value="">Select package</option>
-          <option>P6880 脸部塑型</option>
-          <option>P6880 开肩</option>
-          <option>P6880 体态</option>
-          <option>P6880 祈龄</option>
-          <option>P6880 局部</option>
-          <option>P4880 高级波肽</option>
-          <option>Gold 脸部塑型</option>
-          <option>Gold 开肩</option>
-          <option>T2388 小腿</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>Product <span class="opt">optional</span></label>
-        <select id="product">
-          <option value="">Select product</option>
-          <option>T388 脸部塑型</option>
-          <option>T388 祈龄魔法</option>
-          <option>T298 体态</option>
-          <option>Firming Cream</option>
-        </select>
+      <div class="row2">
+        <div class="field">
+          <label>Package <span class="opt">optional · type or select</span></label>
+          <input type="text" id="package" list="packageList" placeholder="Select or type" autocomplete="off">
+          <datalist id="packageList">
+            <option>P6880 脸部塑型</option>
+            <option>P6880 开肩</option>
+            <option>P6880 体态</option>
+            <option>P6880 祈龄</option>
+            <option>P6880 局部</option>
+            <option>P4880 高级波肽</option>
+            <option>Gold 脸部塑型</option>
+            <option>Gold 开肩</option>
+            <option>T2388 小腿</option>
+          </datalist>
+        </div>
+        <div class="field">
+          <label>Product <span class="opt">optional · type or select</span></label>
+          <input type="text" id="product" list="productList" placeholder="Select or type" autocomplete="off">
+          <datalist id="productList">
+            <option>T388 脸部塑型</option>
+            <option>T388 祈龄魔法</option>
+            <option>T298 体态</option>
+            <option>Firming Cream</option>
+          </datalist>
+        </div>
       </div>
 
       <div class="section-label">Payment</div>
 
-      <div class="field">
-        <label>Amount <span class="opt">optional · supports + − × ÷</span></label>
-        <input type="text" id="amount" inputmode="decimal"
-               placeholder="e.g. 2999 + 1000"
-               oninput="evalAmount(this)" onblur="evalAmount(this)">
-        <div id="amountResult" class="calc-hint"></div>
-      </div>
-
-      <div class="field">
-        <label>Payment Method <span class="opt">optional</span></label>
-        <select id="paymentMethod">
-          <option value="">Select method</option>
-          <option>Cash</option>
-          <option>Card</option>
-          <option>Online Transfer</option>
-          <option>Debit Card</option>
-          <option>Credit Card</option>
-          <option>QR</option>
-          <option>Transfer</option>
-        </select>
+      <div class="row2">
+        <div class="field">
+          <label>Amount <span class="opt">optional</span></label>
+          <input type="text" id="amount" autocomplete="off" autocapitalize="off"
+                 placeholder="e.g. 2999 + 1000"
+                 oninput="evalAmount(this)" onblur="evalAmount(this)">
+          <div id="amountResult" class="calc-hint"></div>
+        </div>
+        <div class="field">
+          <label>Payment Method <span class="opt">optional</span></label>
+          <select id="paymentMethod">
+            <option value="">Select method</option>
+            <option>Cash</option>
+            <option>Card</option>
+            <option>Online Transfer</option>
+            <option>Debit Card</option>
+            <option>Credit Card</option>
+            <option>QR</option>
+            <option>Transfer</option>
+          </select>
+        </div>
       </div>
 
       <div class="section-label">Staff & Notes</div>
@@ -437,6 +469,26 @@
     document.getElementById('date').value = today.getFullYear() + '-' +
       String(today.getMonth() + 1).padStart(2, '0') + '-' +
       String(today.getDate()).padStart(2, '0');
+    updateDateChip();
+
+    function updateDateChip() {
+      var v = document.getElementById('date').value;
+      if (!v) return;
+      var d = new Date(v + 'T00:00:00');
+      var t = new Date();
+      var isToday = d.toDateString() === t.toDateString();
+      var label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('dateChipText').textContent = isToday ? ('Today · ' + label) : label;
+    }
+
+    function openDatePicker() {
+      var inp = document.getElementById('date');
+      if (typeof inp.showPicker === 'function') {
+        try { inp.showPicker(); return; } catch(e) {}
+      }
+      inp.click();
+      inp.focus();
+    }
 
     // Load sales persons + next No
     fetch(API_URL)
