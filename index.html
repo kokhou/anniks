@@ -533,6 +533,26 @@
         document.getElementById('status').textContent = 'Failed to load data';
       });
 
+    function toggleCustom(id) {
+      var sel = document.getElementById(id);
+      var inp = document.getElementById(id + 'Custom');
+      if (sel.value === '__custom__') {
+        inp.classList.add('visible');
+        inp.focus();
+      } else {
+        inp.classList.remove('visible');
+        inp.value = '';
+      }
+    }
+
+    function getFieldValue(id) {
+      var sel = document.getElementById(id);
+      if (sel.value === '__custom__') {
+        return document.getElementById(id + 'Custom').value.trim();
+      }
+      return sel.value;
+    }
+
     function evalAmount(input) {
       var raw = input.value.trim();
       var el = document.getElementById('amountResult');
