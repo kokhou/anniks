@@ -531,6 +531,10 @@
           opt.value = opt.textContent = name;
           sel.appendChild(opt);
         });
+        var customOpt = document.createElement('option');
+        customOpt.value = '__custom__';
+        customOpt.textContent = '+ Custom…';
+        sel.appendChild(customOpt);
         document.getElementById('no').value = data.nextNo;
       })
       .catch(function(e) {
