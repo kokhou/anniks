@@ -422,9 +422,14 @@
   </div>
 
   <script>
-    // Cancel: close modal on desktop, back on web app
+    // ── Apps Script web app /exec URL (paste after deploying) ──
+    var API_URL = 'PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE';
+
+    // Cancel: close modal on desktop (when loaded inside Apps Script)
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { try { google.script.host.close(); } catch(err) {} }
+      if (e.key === 'Escape') {
+        try { google.script.host.close(); } catch(err) {}
+      }
     });
 
     // Set today's date
@@ -434,15 +439,21 @@
       String(today.getDate()).padStart(2, '0');
 
     // Load sales persons + next No
-    google.script.run.withSuccessHandler(function(data) {
-      var sel = document.getElementById('salesPerson');
-      data.salesPersons.forEach(function(name) {
-        var opt = document.createElement('option');
-        opt.value = opt.textContent = name;
-        sel.appendChild(opt);
+    fetch(API_URL)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var sel = document.getElementById('salesPerson');
+        data.salesPersons.forEach(function(name) {
+          var opt = document.createElement('option');
+          opt.value = opt.textContent = name;
+          sel.appendChild(opt);
+        });
+        document.getElementById('no').value = data.nextNo;
+      })
+      .catch(function(e) {
+        document.getElementById('status').style.color = 'var(--error)';
+        document.getElementById('status').textContent = 'Failed to load data';
       });
-      document.getElementById('no').value = data.nextNo;
-    }).getDialogData();
 
     function evalAmount(input) {
       var raw = input.value.trim();
@@ -498,20 +509,28 @@
       btn.textContent = 'Saving...';
       status.textContent = '';
 
-      google.script.run
-        .withSuccessHandler(function() {
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(entry)
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
           btn.disabled = false;
           btn.textContent = 'Save Entry';
-          try { google.script.host.close(); }
-          catch(e) { showSuccess(entry); }
+          if (res.ok) {
+            showSuccess(entry);
+          } else {
+            status.style.color = 'var(--error)';
+            status.textContent = res.error || 'Save failed';
+          }
         })
-        .withFailureHandler(function(e) {
+        .catch(function(e) {
           btn.disabled = false;
           btn.textContent = 'Save Entry';
           status.style.color = 'var(--error)';
-          status.textContent = e.message;
-        })
-        .addEntry(entry);
+          status.textContent = e.message || 'Network error';
+        });
     }
 
     function showSuccess(entry) {
@@ -532,9 +551,11 @@
       ['redeemType','package','trial','product','amount','paymentMethod','salesPerson','remark']
         .forEach(function(id) { document.getElementById(id).value = ''; });
       document.getElementById('amountResult').textContent = '';
-      google.script.run.withSuccessHandler(function(data) {
-        document.getElementById('no').value = data.nextNo;
-      }).getDialogData();
+      fetch(API_URL)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('no').value = data.nextNo;
+        });
     }
   </script>
 </body>

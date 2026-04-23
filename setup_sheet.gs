@@ -12,25 +12,37 @@ function onOpen() {
 // ── Redeem Entry Dialog (desktop menu) ──
 
 function showRedeemDialog() {
-  var html = HtmlService.createHtmlOutputFromFile("dialog")
+  var html = HtmlService.createHtmlOutputFromFile("index")
     .setWidth(420)
     .setHeight(580);
   SpreadsheetApp.getUi().showModalDialog(html, "New Redeem Entry");
 }
 
-// ── Web App entry point (mobile) ──
+// ── Web App JSON API (called from GitHub Pages frontend) ──
 
-function doGet() {
-  return HtmlService.createHtmlOutputFromFile("dialog")
-    .setTitle("New Redeem Entry")
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+function doGet(e) {
+  return jsonResponse_(getDialogData());
+}
+
+function doPost(e) {
+  try {
+    var entry = JSON.parse(e.postData.contents);
+    addEntry(entry);
+    return jsonResponse_({ ok: true });
+  } catch (err) {
+    return jsonResponse_({ ok: false, error: String(err) });
+  }
+}
+
+function jsonResponse_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function getDialogData() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var salesPersons = getSalesPersons();
 
-  // Auto-calculate next No for today
   var today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
   var data = sheet.getDataRange().getValues();
   var count = 0;
