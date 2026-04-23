@@ -15,6 +15,25 @@ function getDialogData() {
   return { salesPersons: salesPersons, nextNo: count + 1 };
 }
 
+function parseEntryDate_(raw) {
+  if (!raw) return new Date();
+  var datePart = raw, timePart = "00:00";
+  if (raw.indexOf("T") !== -1) {
+    var parts = raw.split("T");
+    datePart = parts[0];
+    timePart = parts[1] || "00:00";
+  }
+  var d = datePart.split("-");
+  var t = timePart.split(":");
+  return new Date(
+    parseInt(d[0], 10),
+    parseInt(d[1], 10) - 1,
+    parseInt(d[2], 10),
+    parseInt(t[0], 10) || 0,
+    parseInt(t[1], 10) || 0
+  );
+}
+
 function addEntry(entry) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var date = parseEntryDate_(entry.date);
