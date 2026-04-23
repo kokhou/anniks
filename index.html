@@ -697,7 +697,7 @@
         });
     }
 
-    function showSuccess(entry) {
+    function showSuccess(entry, createdBy) {
       document.getElementById('formView').style.display = 'none';
       var s = document.getElementById('successView');
       s.style.display = 'flex';
@@ -705,6 +705,22 @@
         [entry.salesPerson, entry.redeemType,
          entry.package, entry.amount ? 'RM ' + entry.amount : '']
         .filter(Boolean).join(' · ');
+
+      // Build WhatsApp share message
+      var lines = ['🧾 *New Redeem Entry*'];
+      if (createdBy)            lines.push('By: ' + createdBy);
+      if (entry.date)           lines.push('Date: ' + entry.date.replace('T', ' '));
+      if (entry.salesPerson)    lines.push('Sales: ' + entry.salesPerson);
+      if (entry.redeemType)     lines.push('Type: ' + entry.redeemType);
+      if (entry.package)        lines.push('Package: ' + entry.package);
+      if (entry.trial)          lines.push('Trial: ' + entry.trial);
+      if (entry.product)        lines.push('Product: ' + entry.product);
+      if (entry.amount)         lines.push('Amount: RM ' + entry.amount);
+      if (entry.paymentMethod)  lines.push('Pay: ' + entry.paymentMethod);
+      if (entry.remark)         lines.push('Note: ' + entry.remark);
+
+      document.getElementById('shareWhatsApp').href =
+        'https://wa.me/?text=' + encodeURIComponent(lines.join('\n'));
     }
 
     function resetForm() {
