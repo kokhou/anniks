@@ -514,7 +514,7 @@
     <div class="bottom-bar">
       <button class="btn-submit" id="submitBtn" onclick="submitEntry()">Save Entry</button>
       <div id="status"></div>
-      <div class="build-tag">build <!--BUILD-->2026-04-23 16:42<!--/BUILD--></div>
+      <div class="build-tag">build <!--BUILD-->2026-04-23 16:45<!--/BUILD--></div>
     </div>
   </div>
 
@@ -707,17 +707,15 @@
         .filter(Boolean).join(' · ');
 
       // Build WhatsApp share message
-      var lines = ['*Sales*'];
+      var lines = ['*Sales ' + (entry.salesPerson || '') + '*'];
       lines.push('Package: '  + (entry.package       || ''));
       lines.push('Product: '  + (entry.product       || ''));
       lines.push('Amount: '   + (entry.amount ? 'RM ' + entry.amount : ''));
       lines.push('Pay: '      + (entry.paymentMethod || ''));
-      lines.push('');
       lines.push('Redeem: '   + (entry.redeemType    || ''));
-      lines.push('Sales: '    + (entry.salesPerson   || ''));
       if (entry.remark) {
         lines.push('');
-        lines.push(entry.remark);
+        lines.push('_' + entry.remark + '_');
       }
 
       document.getElementById('shareWhatsApp').href =
